@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     gmail_client_secret_json: str | None = Field(default=None, alias="GMAIL_CLIENT_SECRET_JSON")
     gmail_token_json: str | None = Field(default=None, alias="GMAIL_TOKEN_JSON")
+    gmail_client_secret_path: str | None = Field(default=None, alias="GMAIL_CLIENT_SECRET_PATH")
+    gmail_token_path: str | None = Field(default=None, alias="GMAIL_TOKEN_PATH")
     gmail_scopes: str = Field(
         default="https://www.googleapis.com/auth/gmail.readonly,https://www.googleapis.com/auth/gmail.modify",
         alias="GMAIL_SCOPES",
