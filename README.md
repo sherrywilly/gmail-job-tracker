@@ -49,6 +49,25 @@ Worker (new terminal):
 celery -A app.workers.celery_app.celery_app worker -l INFO
 ```
 
+### 5) Run React dashboard (optional)
+
+Dev (recommended):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Then open `http://localhost:5173` (it proxies `/api` to the FastAPI server).
+
+To serve the built dashboard from FastAPI at `http://localhost:8000/dashboard`:
+
+```bash
+cd frontend
+npm run build
+```
+
 Optional scheduler (beat):
 
 ```bash
