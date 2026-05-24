@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>gmail-job-tracker</title>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 2rem; }
+      h1 { margin-bottom: 0.25rem; }
+      .muted { color: #666; margin-top: 0; }
+      table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+      th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+      code { background: #f6f6f6; padding: 0.1rem 0.25rem; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Dashboard</h1>
+    <p class="muted">Signed in as <code>{{ user.email }}</code></p>
+
+    <h2>Unread</h2>
+    {% if urgent_emails %}
+      <table>
+        <thead>
+          <tr>
+            <th>Received</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Snippet</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in urgent_emails %}
+            <tr>
+              <td>{{ e.received_at }}</td>
+              <td>{{ e.sender }}</td>
+              <td>{{ e.subject }}</td>
+              <td>{{ e.snippet }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No unread emails stored yet.</p>
+    {% endif %}
+  </body>
+</html>
