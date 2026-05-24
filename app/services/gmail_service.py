@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from googleapiclient.discovery import build
@@ -15,14 +16,17 @@ log = logging.getLogger(__name__)
 
 
 def is_enabled() -> bool:
-    return bool(settings.gmail_client_secret_json and settings.gmail_token_json)
+    return bool(_client_secret_json() and _token_json())
 
 
 def build_gmail_client() -> Any:
     if not is_enabled():
-        raise RuntimeError("Gmail integration is not configured. Set GMAIL_CLIENT_SECRET_JSON and GMAIL_TOKEN_JSON.")
+        raise RuntimeError(
+            "Gmail integration is not configured. "
+            "Set GMAIL_CLIENT_SECRET_JSON + GMAIL_TOKEN_JSON (or GMAIL_CLIENT_SECRET_PATH + GMAIL_TOKEN_PATH)."
+        )
 
-    token_info = json.loads(settings.gmail_token_json or "{}")
+    token_info = json.loads(_token_json() or "{}")
     if "client_id" not in token_info or "client_secret" not in token_info:
         token_info.update(_extract_client_id_secret())
     creds = Credentials.from_authorized_user_info(token_info, scopes=_scopes())
@@ -34,7 +38,7 @@ def _scopes() -> list[str]:
 
 
 def _extract_client_id_secret() -> dict[str, str]:
-    raw = settings.gmail_client_secret_json
+    raw = _client_secret_json()
     if not raw:
         return {}
     try:
@@ -50,6 +54,24 @@ def _extract_client_id_secret() -> dict[str, str]:
         out["client_id"] = client_id
         out["client_secret"] = client_secret
     return out
+
+
+def _read_json_file(path: str | None) -> str | None:
+    if not path:
+        return None
+    try:
+        return Path(path).expanduser().read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+
+def _client_secret_json() -> str | None:
+    return settings.gmail_client_secret_json or _read_json_file(settings.gmail_client_secret_path)
+
+
+def _token_json() -> str | None:
+    return settings.gmail_token_json or _read_json_file(settings.gmail_token_path)
+
 
 def list_recent_messages(max_results: int = 25) -> list[dict[str, Any]]:
     svc = build_gmail_client()

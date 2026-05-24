@@ -31,7 +31,9 @@ Edit `.env` and set at least:
 - `DATABASE_URL`
 - `REDIS_URL`
 - (optional) `OPENAI_API_KEY` for AI classification
-- (optional) `GMAIL_CLIENT_SECRET_JSON` + `GMAIL_TOKEN_JSON` for Gmail sync
+- (optional) Gmail sync via either:
+  - `GMAIL_CLIENT_SECRET_JSON` + `GMAIL_TOKEN_JSON` (JSON strings), or
+  - `GMAIL_CLIENT_SECRET_PATH` + `GMAIL_TOKEN_PATH` (paths to JSON files, e.g. `secrets/credentials.json` + `secrets/token.json`)
 
 ### 4) Run API + worker
 
@@ -47,6 +49,25 @@ Worker (new terminal):
 celery -A app.workers.celery_app.celery_app worker -l INFO
 ```
 
+### 5) Run React dashboard (optional)
+
+Dev (recommended):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Then open `http://localhost:5173` (it proxies `/api` to the FastAPI server).
+
+To serve the built dashboard from FastAPI at `http://localhost:8000/dashboard`:
+
+```bash
+cd frontend
+npm run build
+```
+
 Optional scheduler (beat):
 
 ```bash
@@ -57,6 +78,7 @@ celery -A app.workers.celery_app.celery_app beat -l INFO
 
 - In development, the API can auto-create tables at startup (`AUTO_CREATE_TABLES=true`).
 - If `OPENAI_API_KEY` is not configured, classification falls back to a keyword-based heuristic.
+- Keep Google OAuth files like `credentials.json`/`token.json` out of git (use `secrets/` or another ignored folder and point `GMAIL_*_PATH` at them).
 
 ## API quickstart
 
